@@ -1,0 +1,688 @@
+volatility3 更新
+volatility3是对Volatility2的重写，它基于Python3编写，对Windows 10的内存取证很友好，且速度比Volatility2快很多。对于用户而言，新功能的重点包括：大幅提升性能，消除了对--profile的依赖，以便框架确定需要哪个符号表（配置文件）来匹配内存示例中的操作系统版本，在64位系统（例如Window的wow64）上正确评估32位代码，自动评估内存中的代码，以避免对分析人员进行尽可能多的手动逆向工程
+
+
+若是直接下载的py脚本需要先将windows符号表放置volatility3/volatility/symbols/中
+
+
+基本用法
+python3 vol.py [plugin] -f [image]
+ 
+常用插件：
+    layerwriter：列出内存镜像platform信息
+    linux.bash：从内存中恢复bash命令历史记录
+    linux.check_afinfo：验证网络协议的操作功能指针
+    linux.check_syscall：检查系统调用表中的挂钩
+    linux.elfs：列出所有进程的所有内存映射ELF文件
+    linux.lsmod：列出加载的内核模块
+    linux.lsof：列出所有进程的所有内存映射
+    linux.malfind：列出可能包含注入代码的进程内存范围
+    linux.proc：列出所有进程的所有内存映射
+    linux.pslist：列出linux内存映像中存在的进程
+    linux.pstree：列出进程树
+    mac.bash：从内存中恢复bash命令历史记录
+    mac.check_syscall：检查系统调用表中的挂钩
+    mac.check_sysctl：检查sysctl处理程序的挂钩
+    mac.check_trap_table：检查trap表中的挂钩
+    mac.ifconfig：列出网卡信息
+    mac.lsmod：列出加载的内核模块
+    mac.lsof：列出所有进程的所有内存映射
+    mac.malfind：列出可能包含注入代码的进程内存范围
+    mac.netstat：列出所有进程的所有网络连接
+    mac.psaux：恢复程序命令行参数
+    mac.pslist：列出linux内存映像中存在的进程
+    mac.pstree：列出进程树
+    mac.tasks：列出Mac内存映像中存在的进程
+    windows.info：显示正在分析的内存样本的OS和内核详细信息
+    windows.callbacks：列出内核回调和通知例程
+    windows.cmdline：列出进程命令行参数
+    windows.dlldump：将进程内存范围DLL转储
+    windows.dlllist：列出Windows内存映像中已加载的dll模块
+    windows.driverirp：在Windows内存映像中列出驱动程序的IRP
+    windows.driverscan：扫描Windows内存映像中存在的驱动程序
+    windows.filescan：扫描Windows内存映像中存在的文件对象
+    windows.handles：列出进程打开的句柄
+    windows.malfind：列出可能包含注入代码的进程内存范围
+    windows.moddump：转储内核模块
+    windows.modscan：扫描Windows内存映像中存在的模块
+    windows.mutantscan：扫描Windows内存映像中存在的互斥锁
+    windows.pslist：列出Windows内存映像中存在的进程
+    windows.psscan：扫描Windows内存映像中存在的进程
+    windows.pstree：列出进程树
+    windows.procdump：转储处理可执行映像
+    windows.registry.certificates：列出注册表中存储的证书
+    windows.registry.hivelist：列出内存映像中存在的注册表配置单元
+    windows.registry.hivescan：扫描Windows内存映像中存在的注册表配置单元
+    windows.registry.printkey：在配置单元或特定键值下列出注册表项
+    windows.registry.userassist：打印用户助手注册表项和信息
+    windows.ssdt：列出系统调用表
+    windows.strings：读取字符串命令的输出，并指示每个字符串属于哪个进程
+    windows.svcscan：扫描Windows服务
+    windows.symlinkscan：扫描Windows内存映像中存在的链接
+
+
+    choose from 
+    banners.Banners, 
+    configwriter.ConfigWriter, 
+    frameworkinfo.FrameworkInfo, 
+    isfinfo.IsfInfo, 
+    layerwriter.LayerWriter, 
+    linux.bash, 
+    linux.check_afinfo, 
+    linux.check_creds, 
+    linux.check_idt, 
+    linux.check_modules, 
+    linux.check_syscall, 
+    linux.elfs, 
+    linux.keyboard_notifiers, 
+    linux.lsmod, 
+    linux.lsof, 
+    linux.malfind, 
+    linux.proc, 
+    linux.pslist, 
+    linux.pstree, 
+    linux.tty_check, 
+    mac.bash, 
+    mac.check_syscall, 
+    mac.check_sysctl, 
+    mac.check_trap_table, 
+    mac.ifconfig, 
+    mac.kauth_listeners, 
+    mac.kauth_scopes, 
+    mac.kevents, 
+    mac.list_files, 
+    mac.lsmod, 
+    mac.lsof, 
+    mac.malfind, 
+    mac.mount, 
+    mac.netstat, 
+    mac.proc_maps, 
+    mac.psaux, 
+    mac.pslist, 
+    mac.pstree, 
+    mac.socket_filters, 
+    mac.timers, 
+    mac.trustedbsd, 
+    mac.vfsevents, 
+    timeliner.Timeliner, 
+    windows.bigpools, 
+    windows.cachedump, 
+    windows.callbacks, 
+    windows.cmdline, 
+    windows.dlllist, 
+    windows.driverirp, 
+    windows.driverscan, 
+    windows.dumpfiles,   进程缓存的文件
+    windows.envars,   进程环境变量
+    windows.filescan, 
+    windows.getservicesids, 
+    windows.getsids, 
+    windows.handles, 
+    windows.hashdump, 
+    windows.info, 
+    windows.lsadump, 
+    windows.malfind, 
+    windows.memmap, 
+    windows.modscan, 
+    windows.modules, 
+    windows.mutantscan, 
+    windows.netscan, 网络连接状态 查看端口信息
+    windows.poolscanner, 
+    windows.privileges.Privs, 
+    windows.pslist, 
+    windows.psscan, 
+    windows.pstree, 
+    windows.registry.certificates,   查看CA证书信息
+    windows.registry.hivelist, 
+    windows.registry.hivescan, 
+    windows.registry.printkey, 
+    windows.registry.userassist, 
+    windows.ssdt, 
+    windows.statistics, 
+    windows.strings, 
+    windows.svcscan,   服务运行状态
+    windows.symlinkscan, 
+    windows.vadinfo, 
+    windows.vadyarascan, 
+    windows.verinfo, 
+    windows.virtmap, 
+    yarascan.YaraScan
+使用yarascan在进程内搜索字符串(from:卡比卡比卡比)
+python3 vol.py -f test/dump.raw yarascan.YaraScan --yara-rule "https://" 
+python3 vol.py -f test/dump.raw windows.vadyarascan.VadYaraScan --yara-rules "https://" --pid 2136 1672 2360
+
+banners.Banners                                 Attempts to identify potential linux banners in an image
+configwriter.ConfigWriter                       Runs the automagics and both prints and outputs configuration in the output directory.
+frameworkinfo.FrameworkInfo                     Plugin to list the various modular components of Volatility
+isfinfo.IsfInfo                                 Determines information about the currently available ISF files, or a specific one
+layerwriter.LayerWriter                         Runs the automagics and writes out the primary layer produced by the stacker.
+linux.bash.Bash                                 Recovers bash command history from memory.
+linux.check_afinfo.Check_afinfo                 Verifies the operation function pointers of network protocols.
+linux.check_creds.Check_creds                   Checks if any processes are sharing credential structures
+linux.check_idt.Check_idt                       Checks if the IDT has been altered
+linux.check_modules.Check_modules               Compares module list to sysfs info, if available
+linux.check_syscall.Check_syscall               Check system call table for hooks.
+linux.elfs.Elfs                                 Lists all memory mapped ELF files for all processes.
+linux.keyboard_notifiers.Keyboard_notifiers     Parses the keyboard notifier call chain
+linux.lsmod.Lsmod                               Lists loaded kernel modules.
+linux.lsof.Lsof                                 Lists all memory maps for all processes.
+linux.malfind.Malfind                           Lists process memory ranges that potentially contain injected code.
+linux.proc.Maps                                 Lists all memory maps for all processes.
+linux.pslist.PsList                             Lists the processes present in a particular linux memory image.
+linux.pstree.PsTree                             Plugin for listing processes in a tree based on their parent process ID.
+linux.tty_check.tty_check                       Checks tty devices for hooks
+mac.bash.Bash                                   Recovers bash command history from memory.
+mac.check_syscall.Check_syscall                 Check system call table for hooks.
+mac.check_sysctl.Check_sysctl                   Check sysctl handlers for hooks.
+mac.check_trap_table.Check_trap_table           Check mach trap table for hooks.
+mac.ifconfig.Ifconfig                           Lists loaded kernel modules
+mac.kauth_listeners.Kauth_listeners             Lists kauth listeners and their status
+mac.kauth_scopes.Kauth_scopes                   Lists kauth scopes and their status
+mac.kevents.Kevents                             Lists event handlers registered by processes
+mac.list_files.List_Files                       Lists all open file descriptors for all processes.
+mac.lsmod.Lsmod                                 Lists loaded kernel modules.
+mac.lsof.Lsof                                   Lists all open file descriptors for all processes.
+mac.malfind.Malfind                             Lists process memory ranges that potentially contain injected code.
+mac.mount.Mount                                 A module containing a collection of plugins that produce data typically foundin Mac's mount command
+mac.netstat.Netstat                             Lists all network connections for all processes.
+mac.proc_maps.Maps                              Lists process memory ranges that potentially contain injected code.
+mac.psaux.Psaux                                 Recovers program command line arguments.
+mac.pslist.PsList                               Lists the processes present in a particular mac memory image.
+mac.pstree.PsTree                               Plugin for listing processes in a tree based on their parent process ID.
+mac.socket_filters.Socket_filters               Enumerates kernel socket filters.
+mac.timers.Timers                               Check for malicious kernel timers.
+mac.trustedbsd.Trustedbsd                       Checks for malicious trustedbsd modules
+mac.vfsevents.VFSevents                         Lists processes that are filtering file system events
+timeliner.Timeliner                             Runs all relevant plugins that provide time related information and orders the results by time.
+windows.bigpools.BigPools                       List big page pools.
+windows.cachedump.Cachedump                     Dumps lsa secrets from memory
+windows.callbacks.Callbacks                     Lists kernel callbacks and notification routines.
+windows.cmdline.CmdLine                         Lists process command line arguments.
+windows.dlllist.DllList                         Lists the loaded modules in a particular windows memory image.
+windows.driverirp.DriverIrp                     List IRPs for drivers in a particular windows memory image.
+windows.driverscan.DriverScan                   Scans for drivers present in a particular windows memory image.
+windows.dumpfiles.DumpFiles                     Dumps cached file contents from Windows memory samples.
+windows.envars.Envars                           Display process environment variables
+windows.filescan.FileScan                       Scans for file objects present in a particular windows memory image.
+windows.getservicesids.GetServiceSIDs           Lists process token sids.
+windows.getsids.GetSIDs                         Print the SIDs owning each process
+windows.handles.Handles                         Lists process open handles.
+windows.hashdump.Hashdump                       Dumps user hashes from memory
+windows.info.Info                               Show OS & kernel details of the memory sample being analyzed.
+windows.lsadump.Lsadump                         Dumps lsa secrets from memory
+windows.malfind.Malfind                         Lists process memory ranges that potentially contain injected code.
+windows.memmap.Memmap                           Prints the memory map
+windows.modscan.ModScan                         Scans for modules present in a particular windows memory image.
+windows.modules.Modules                         Lists the loaded kernel modules.
+windows.mutantscan.MutantScan                   Scans for mutexes present in a particular windows memory image.
+windows.netscan.NetScan                         Scans for network objects present in a particular windows memory image.
+windows.netstat.NetStat                         Traverses network tracking structures present in a particular windows memory image.
+windows.poolscanner.PoolScanner                 A generic pool scanner plugin.
+windows.privileges.Privs                        Lists process token privileges
+windows.pslist.PsList                           Lists the processes present in a particular windows memory image.
+windows.psscan.PsScan                           Scans for processes present in a particular windows memory image.
+windows.pstree.PsTree                           Plugin for listing processes in a tree based on their parent process ID.
+windows.registry.certificates.Certificates      Lists the certificates in the registry's Certificate Store.
+windows.registry.hivelist.HiveList              Lists the registry hives present in a particular memory image.
+windows.registry.hivescan.HiveScan              Scans for registry hives present in a particular windows memory image.
+windows.registry.printkey.PrintKey              Lists the registry keys under a hive or specific key value.
+windows.registry.userassist.UserAssist          Print userassist registry keys and information.
+windows.ssdt.SSDT                               Lists the system call table.
+windows.statistics.Statistics
+windows.strings.Strings                         Reads output from the strings command and indicates which process(es) each string belongs to.
+windows.svcscan.SvcScan                         Scans for windows services.
+windows.symlinkscan.SymlinkScan                 Scans for links present in a particular windows memory image.
+windows.vadinfo.VadInfo                         Lists process memory ranges.
+windows.vadyarascan.VadYaraScan                 Scans all the Virtual Address Descriptor memory maps using yara.
+windows.verinfo.VerInfo                         Lists version information from PE files.
+windows.virtmap.VirtMap                         Lists virtual mapped sections.
+yarascan.YaraScan                               Scans kernel memory using yara rules (string or file).
+
+
+
+
+
+
+
+
+
+
+查看镜像windows信息
+python3 vol.py -f tmp/memory.img windows.info
+
+查看镜像windows 命令行信息
+python3 vol.py -f tmp/memory.img windows.cmdline
+
+列出镜像的ps 进程信息
+python3 vol.py -f tmp/memory.img windows.pslist
+
+dump 指定pid的内容
+python3 vol.py -f tmp/memory.img windows.pslist --pid 3660 --dump
+
+查找文件
+python3 vol.py -f tmp/memory.img windows.filescan |grep -E 'flag|txt|png|jpg|gif|bmp'
+
+查看xxx插件的帮助
+python3 vol.py -f tmp/memory.img windows.dumpfiles  -h
+
+dumpfles 可以dump pid physaddr virtaddr
+python3 vol.py -f tmp/memory.img windows.dumpfiles  --physaddr 0x484f900 
+
+其他
+https://jishuin.proginn.com/p/763bfbd5a742
+https://blog.csdn.net/qq_32261191/article/details/106239170
+
+举例 
+
+
+[HDCTF2019]你能发现什么蛛丝马迹吗
+跟volatility2 一样 首先查看镜像信息
+
+python3 vol.py -f tmp/memory.img windows.info
+
+
+Volatility 3 Framework 1.0.0
+Progress:  100.00               PDB scanning finished                     
+Variable        Value
+
+Kernel Base     0x80800000
+DTB     0xe02000
+Symbols file:///root/%E6%A1%8C%E9%9D%A2/volatility3-1.0.0/volatility3/symbols/windows/ntkrnlpa.pdb/80A87123E83C40579E8319E5DB7B523C-1.json.xz
+Is64Bit False
+IsPAE   True
+primary 0 WindowsIntelPAE
+memory_layer    1 FileLayer
+KdDebuggerDataBlock     0x8088e3e0
+NTBuildLab      3790.srv03_sp1_rtm.050324-1447
+CSDVersion      1
+KdVersionBlock  0x8088e3b8
+Major/Minor     15.3790
+MachineType     332
+KeNumberProcessors      1
+SystemTime      2019-04-25 08:43:06
+NtSystemRoot    C:\WINDOWS
+NtProductType   NtProductServer
+NtMajorVersion  5
+NtMinorVersion  2
+PE MajorOperatingSystemVersion  5
+PE MinorOperatingSystemVersion  2
+PE Machine      332
+PE TimeDateStamp        Fri Mar 25 00:28:04 2005
+
+
+可以发现Is64Bit 是false 说明是32位系统 NTBuildLab 看到是sp1 systemtime 镜像时间是2019-04-25
+
+
+
+查看镜像windows 命令行信息
+python3 vol.py -f tmp/memory.img windows.cmdline
+
+Volatility 3 Framework 1.0.0
+Progress:  100.00               PDB scanning finished                     
+PID     Process Args
+
+4       System  Required memory at 0x10 is not valid (process exited?)
+380     smss.exe        \SystemRoot\System32\smss.exe
+516     csrss.exe       C:\WINDOWS\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,3072,512 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=winsrv:ConServerDllInitialization,2 ProfileControl=Off MaxRequestThreads=16
+580     winlogon.exe    winlogon.exe
+648     services.exe    C:\WINDOWS\system32\services.exe
+660     lsass.exe       C:\WINDOWS\system32\lsass.exe
+880     vmacthlp.exe    "C:\Program Files\VMware\VMware Tools\vmacthlp.exe"
+932     svchost.exe     C:\WINDOWS\system32\svchost.exe -k DcomLaunch
+984     svchost.exe     C:\WINDOWS\system32\svchost.exe -k rpcss
+1040    svchost.exe     C:\WINDOWS\system32\svchost.exe -k NetworkService
+1072    svchost.exe     C:\WINDOWS\system32\svchost.exe -k LocalService
+1096    svchost.exe     C:\WINDOWS\System32\svchost.exe -k netsvcs
+1668    spoolsv.exe     C:\WINDOWS\system32\spoolsv.exe
+1700    msdtc.exe       C:\WINDOWS\system32\msdtc.exe
+1800    svchost.exe     C:\WINDOWS\System32\svchost.exe -k WinErr
+1848    svchost.exe     C:\WINDOWS\system32\svchost.exe -k regsvc
+1920    VGAuthService.e "C:\Program Files\VMware\VMware Tools\VMware VGAuth\VGAuthService.exe"
+300     vmtoolsd.exe    "C:\Program Files\VMware\VMware Tools\vmtoolsd.exe"
+484     svchost.exe     C:\WINDOWS\System32\svchost.exe -k termsvcs
+736     dllhost.exe     C:\WINDOWS\system32\dllhost.exe /Processid:{23509C15-93E8-49FB-8A38-D304F572CB6D}
+1052    dllhost.exe     C:\WINDOWS\system32\dllhost.exe /Processid:{02D4B3F1-FD88-11D1-960D-00805FC79235}
+1368    wmiprvse.exe    C:\WINDOWS\system32\wbem\wmiprvse.exe
+1992    explorer.exe    C:\WINDOWS\Explorer.EXE
+2040    vssvc.exe       Required memory at 0x20044 is inaccessible (swapped)
+1596    vmtoolsd.exe    "C:\Program Files\VMware\VMware Tools\vmtoolsd.exe"  -n vmusr
+1840    ctfmon.exe      "C:\WINDOWS\system32\ctfmon.exe" 
+1792    conime.exe      C:\WINDOWS\system32\conime.exe
+1128    wmiprvse.exe    C:\WINDOWS\system32\wbem\wmiprvse.exe
+2224    wuauclt.exe     "C:\WINDOWS\system32\wuauclt.exe"
+3660    DumpIt.exe      "C:\Documents and Settings\Administrator\桌面\DumpIt\DumpIt.exe" 
+
+可以看到各个pid
+
+列出镜像的ps 进程信息
+python3 vol.py -f tmp/memory.img windows.pslist
+注意每个进程的时间 很有可能时间最新的 或者文件名会传达一些信息
+我们发现进程最后一个是时间最晚的2019-04-25 并且名字叫dumpit
+
+
+Volatility 3 Framework 1.0.0
+Progress:  100.00               PDB scanning finished                     
+PID     PPID    ImageFileName   Offset(V)       Threads Handles SessionId       Wow64   CreateTime      ExitTime        File output
+
+4       0       System  0x81f8f020      56      319     N/A     False   N/A     N/A     Disabled
+380     4       smss.exe        0xfe2f8448      3       18      N/A     False   2018-12-07 16:20:54.000000      N/A     Disabled
+516     380     csrss.exe       0xfe2caa60      12      509     0       False   2018-12-07 16:21:00.000000      N/A     Disabled
+580     380     winlogon.exe    0xfe304298      25      504     0       False   2018-12-07 16:21:04.000000      N/A     Disabled
+648     580     services.exe    0xfe2fdd88      16      303     0       False   2018-12-07 16:21:05.000000      N/A     Disabled
+660     580     lsass.exe       0xfe2e5530      38      458     0       False   2018-12-07 16:21:05.000000      N/A     Disabled
+880     648     vmacthlp.exe    0xfe2f9290      1       26      0       False   2018-12-07 16:21:06.000000      N/A     Disabled
+932     648     svchost.exe     0xfe34d658      6       93      0       False   2018-12-07 16:21:07.000000      N/A     Disabled
+984     648     svchost.exe     0xfde05020      10      268     0       False   2018-12-07 16:21:07.000000      N/A     Disabled
+1040    648     svchost.exe     0xfddf4c08      10      138     0       False   2018-12-07 16:21:08.000000      N/A     Disabled
+1072    648     svchost.exe     0xfddeb020      15      168     0       False   2018-12-07 16:21:08.000000      N/A     Disabled
+1096    648     svchost.exe     0xfdde9a70      79      1271    0       False   2018-12-07 16:21:08.000000      N/A     Disabled
+1668    648     spoolsv.exe     0x81e5a7d0      14      151     0       False   2018-12-07 16:21:26.000000      N/A     Disabled
+1700    648     msdtc.exe       0xfe7385e8      16      166     0       False   2018-12-07 16:21:26.000000      N/A     Disabled
+1800    648     svchost.exe     0xfddb7b18      2       54      0       False   2018-12-07 16:21:27.000000      N/A     Disabled
+1848    648     svchost.exe     0xfddb1020      2       37      0       False   2018-12-07 16:21:27.000000      N/A     Disabled
+1920    648     VGAuthService.e 0xfdda8020      2       65      0       False   2018-12-07 16:21:28.000000      N/A     Disabled
+300     648     vmtoolsd.exe    0xfdc6eb18      8       244     0       False   2018-12-07 16:21:36.000000      N/A     Disabled
+484     648     svchost.exe     0xfe3d5600      16      135     0       False   2018-12-07 16:21:40.000000      N/A     Disabled
+736     648     dllhost.exe     0xfe3d4cb0      22      239     0       False   2018-12-07 16:21:41.000000      N/A     Disabled
+1052    648     dllhost.exe     0xfe30ed88      22      236     0       False   2018-12-07 16:21:42.000000      N/A     Disabled
+1368    932     wmiprvse.exe    0xfdc40638      9       215     0       False   2018-12-07 16:21:44.000000      N/A     Disabled
+1992    1664    explorer.exe    0xfdc1bb18      16      386     0       False   2018-12-07 16:21:50.000000      N/A     Disabled
+2040    648     vssvc.exe       0xfdc1ad88      7       112     0       False   2018-12-07 16:21:51.000000      N/A     Disabled
+1596    1992    vmtoolsd.exe    0xfdbd3418      6       166     0       False   2018-12-07 16:22:01.000000      N/A     Disabled
+1840    1992    ctfmon.exe      0xfdbd2110      1       69      0       False   2018-12-07 16:22:01.000000      N/A     Disabled
+1792    1636    conime.exe      0xfdbbc330      1       32      0       False   2018-12-07 16:22:16.000000      N/A     Disabled
+1128    932     wmiprvse.exe    0xfdba5320      8       165     0       False   2018-12-07 16:22:24.000000      N/A     Disabled
+2224    1096    wuauclt.exe     0xfdb90930      5       116     0       False   2018-12-07 16:22:44.000000      N/A     Disabled
+3660    1992    DumpIt.exe      0xfdb6a638      1       26      0       False   2019-04-25 08:43:04.000000      N/A     Disabled
+
+
+
+子父进程关系：PID代表当前进程ID，PPID代表父进程ID
+进程名称(system)，句柄数(handles)，线程数(threads)这些是很多比赛中会经常考到的信息
+
+
+镜像导出 指定pid的进程
+python3 vol.py -f tmp/memory.img windows.pslist --pid 3660 --dump
+
+导出后默认当前文件夹下
+
+foremost 可以得到一张图片
+
+镜像扫描文件
+python3 vol.py -f tmp/memory.img windows.filescan |grep 'flag'
+
+0x484f900  100.0\Documents and Settings\Administrator\桌面\flag.png     112
+0x726a0f0       \Documents and Settings\Administrator\Recent\flag.png.lnk       112
+
+
+dumpfiles -h 可以查看这个功能的帮助
+python3 vol.py -f tmp/memory.img windows.dumpfiles  -h
+
+usage: volatility windows.dumpfiles.DumpFiles [-h] [--pid PID] [--virtaddr VIRTADDR] [--physaddr PHYSADDR]
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --pid PID            Process ID to include (all other processes are excluded)
+  --virtaddr VIRTADDR  Dump a single _FILE_OBJECT at this virtual address
+  --physaddr PHYSADDR  Dump a single _FILE_OBJECT at this physical address
+
+可选参数：
+   -h, --help 显示此帮助信息并退出
+   --pid PID 要包含的进程 ID（排除所有其他进程）
+   --virtaddr VIRTADDR 在此虚拟地址转储单个 _FILE_OBJECT
+   --physaddr PHYSADDR 在此物理地址转储单个 _FILE_OBJECT
+
+直接使用物理地址
+python3 vol.py -f tmp/memory.img windows.dumpfiles  --physaddr 0x484f900 
+Volatility 3 Framework 1.0.0
+Progress:  100.00               PDB scanning finished                     
+Cache   FileObject      FileName        Result
+
+DataSectionObject       0x484f900       flag.png        file.0x484f900.0xfdbd16d0.DataSectionObject.flag.png.dat
+                                                                                                                      
+看到一张二维码 扫出来是一串字符串
+
+jfXvUoypb8p3zvmPks8kJ5Kt0vmEw0xUZyRGOicraY4=
+
+
+# 单单有个字符串是肯定不行的所以我们在重新dump下那个dumpit
+# python3 vol.py -f tmp/memory.img windows.dumpfile --pid 3660
+# dump出来并没有敏感信息
+再回去看一下刚刚那个formost分离出来的png
+发现还会分离出来一张png
+
+得到
+key: Th1s_1s_K3y00000
+iv: 1234567890123456
+
+
+有key 和iv
+是aes加密
+
+http://tool.chacuo.net/cryptaes/
+得到flag
+flag{F0uNd_s0m3th1ng_1n_M3mory}
+
+
+
+
+BMZCTF memory
+https://blog.csdn.net/mochu7777777/article/details/111147839
+title
+分析内存镜像,破解管理员的登录密码,flag为明文密码的MD5值
+
+首先看看镜像系统信息
+python3 vol.py -f tmp/bmzctfmemory/memory windows.info
+
+
+既然是要破解管理员登录密码 那肯定要去找注册表找hash
+
+volatility3 更新有直接导出hashdunp的方法
+python3 vol.py -f tmp/bmzctfmemory/memory windows.hashdump
+
+Progress:  100.00               PDB scanning finished                     
+User    rid     lmhash  nthash
+Administrator   500     0182bd0bd4444bf867cd839bf040d93b        c22b315c040ae6e0efee3518d830362b
+Guest   501     aad3b435b51404eeaad3b435b51404ee        31d6cfe0d16ae931b73c59d7e0c089c0
+HelpAssistant   1000    132893a93031a4d2c70b0ba3fd87654a        fe572c566816ef495f84fdca382fd8bb
+
+得到hash
+
+john爆破hash密码
+john --wordlist=/usr/share/john/password.lst --rules --format=NT hashfile
+
+改一下内容形式
+Administrator:500:0182bd0bd4444bf867cd839bf040d93b:c22b315c040ae6e0efee3518d830362b:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+HelpAssistant:1000:132893a93031a4d2c70b0ba3fd87654a:fe572c566816ef495f84fdca382fd8bb:::
+
+john --wordlist=/usr/share/john/password.lst --rules --format=NT hash.txt                                                                                         
+Using default input encoding: UTF-8
+Loaded 3 password hashes with no different salts (NT [MD4 128/128 AVX 4x3])
+Warning: no OpenMP support for this hash type, consider --fork=2
+Press 'q' or Ctrl-C to abort, almost any other key for status
+123456789        (Administrator)
+                 (Guest)
+2g 0:00:00:00 DONE (2021-09-01 23:29) 66.66g/s 5228Kp/s 5228Kc/s 5234KC/s Tnting..Sssing
+Use the "--show --format=NT" options to display all of the cracked passwords reliably
+Session completed
+
+md5(123456789)
+25f9e794323b453885f5181f1b624d0b
+
+
+可以查看注册表内容
+python3 vol.py -f tmp/bmzctfmemory/memory windows.registry.hivelist       
+Volatility 3 Framework 1.0.0
+Progress:  100.00               PDB scanning finished                     
+Offset  FileFullPath    File output
+
+0xe1bf8b60      \Device\HarddiskVolume1\Documents and Settings\Administrator\Local Settings\Application Data\Microsoft\Windows\UsrClass.dat     Disabled
+0xe185bb60      \Device\HarddiskVolume1\Documents and Settings\Administrator\NTUSER.DAT Disabled
+0xe1b973e0      \Device\HarddiskVolume1\Documents and Settings\LocalService\Local Settings\Application Data\Microsoft\Windows\UsrClass.dat      Disabled
+0xe1b89b60      \Device\HarddiskVolume1\Documents and Settings\LocalService\NTUSER.DAT  Disabled
+0xe190a008      \Device\HarddiskVolume1\Documents and Settings\NetworkService\Local Settings\Application Data\Microsoft\Windows\UsrClass.dat    Disabled
+0xe1901788      \Device\HarddiskVolume1\Documents and Settings\NetworkService\NTUSER.DAT        Disabled
+0xe142cad8      \Device\HarddiskVolume1\WINDOWS\system32\config\software        Disabled
+0xe1485ac8      \Device\HarddiskVolume1\WINDOWS\system32\config\default Disabled
+0xe1420b60      \Device\HarddiskVolume1\WINDOWS\system32\config\SECURITY        Disabled
+0xe1451b60      \Device\HarddiskVolume1\WINDOWS\system32\config\SAM     Disabled
+0xe12a6b60              Disabled
+0xe101b008      \Device\HarddiskVolume1\WINDOWS\system32\config\system  Disabled
+0xe1008900              Disabled
+
+
+
+
+
+
+bmzctf
+内存取证三项
+
+title
+一天下午小白出去吃饭，临走之前还不忘锁了电脑，这时同寝室的小黑想搞点事情，懂点黑客和社工知识的小黑经过多次尝试获得了密码成功进入电脑，于是便悄悄在电脑上动起手脚了，便在桌面上写着什么，想给小白一个惊喜，同时还传送着小白的机密文件，正巧这时小白刚好回来，两人都吓了一跳，小黑也不管自己在电脑上留下的操作急忙离开电脑，故作淡定的说：“我就是随便看看”。 
+1.小黑写的啥，据说是flag？
+2.那么问题来了，小白的密码是啥？
+3.小黑发送的机密文件里面到底是什么
+
+
+1 先看普通的系统信息
+python3 vol.py -f tmp/bmzctfneicunquzheng3/memory.raw windows.info
+Volatility 3 Framework 1.0.0
+Progress:  100.00               PDB scanning finished                     
+Variable        Value
+
+Kernel Base     0x804d8000
+DTB     0xb18000
+Symbols file:///root/%E6%A1%8C%E9%9D%A2/volatility3-1.0.0/volatility3/symbols/windows/ntkrnlpa.pdb/BD8F451F3E754ED8A34B50560CEB08E3-1.json.xz
+Is64Bit False
+IsPAE   True
+primary 0 WindowsIntelPAE
+memory_layer    1 FileLayer
+KdDebuggerDataBlock     0x80545ce0
+NTBuildLab      2600.xpsp_sp2_rtm.040803-2158
+CSDVersion      2
+KdVersionBlock  0x80545cb8
+Major/Minor     15.2600
+MachineType     332
+KeNumberProcessors      1
+SystemTime      2016-11-14 12:52:58
+NtSystemRoot    C:\WINDOWS
+NtProductType   NtProductWinNt
+NtMajorVersion  5
+NtMinorVersion  1
+PE MajorOperatingSystemVersion  5
+PE MinorOperatingSystemVersion  1
+PE Machine      332
+PE TimeDateStamp        Wed Aug  4 05:58:36 2004
+
+
+2 再看看cmd命令行里有没有信息
+python3 vol.py -f tmp/bmzctfneicunquzheng3/memory.raw windows.cmdline
+Volatility 3 Framework 1.0.0
+Progress:  100.00               PDB scanning finished                     
+PID     Process Args
+
+4       System  Required memory at 0x10 is not valid (process exited?)
+552     smss.exe        \SystemRoot\System32\smss.exe
+668     csrss.exe       C:\WINDOWS\system32\csrss.exe ObjectDirectory=\Windows SharedSection=1024,3072,512 Windows=On SubSystemType=Windows ServerDll=basesrv,1 ServerDll=winsrv:UserServerDllInitialization,3 ServerDll=winsrv:ConServerDllInitialization,2 ProfileControl=Off MaxRequestThreads=16
+692     winlogon.exe    winlogon.exe
+736     services.exe    C:\WINDOWS\system32\services.exe
+748     lsass.exe       C:\WINDOWS\system32\lsass.exe
+900     vmacthlp.exe    "C:\Program Files\VMware\VMware Tools\vmacthlp.exe"
+928     svchost.exe     C:\WINDOWS\system32\svchost -k DcomLaunch
+992     svchost.exe     C:\WINDOWS\system32\svchost -k rpcss
+1152    svchost.exe     C:\WINDOWS\System32\svchost.exe -k netsvcs
+1220    svchost.exe     C:\WINDOWS\system32\svchost.exe -k NetworkService
+1360    svchost.exe     C:\WINDOWS\system32\svchost.exe -k LocalService
+1560    spoolsv.exe     C:\WINDOWS\system32\spoolsv.exe
+1692    svchost.exe     C:\WINDOWS\system32\svchost.exe -k bthsvcs
+1756    VGAuthService.e "C:\Program Files\VMware\VMware Tools\VMware VGAuth\VGAuthService.exe"
+1932    vmtoolsd.exe    "C:\Program Files\VMware\VMware Tools\vmtoolsd.exe"
+308     alg.exe C:\WINDOWS\System32\alg.exe
+316     wmiprvse.exe    C:\WINDOWS\system32\wbem\wmiprvse.exe
+1416    explorer.exe    C:\WINDOWS\Explorer.EXE
+1204    wscntfy.exe     C:\WINDOWS\system32\wscntfy.exe
+1744    rundll32.exe    "C:\WINDOWS\system32\rundll32.exe" bthprops.cpl,,BluetoothAuthenticationAgent
+1704    vmtoolsd.exe    "C:\Program Files\VMware\VMware Tools\vmtoolsd.exe" -n vmusr
+1912    ctfmon.exe      "C:\WINDOWS\system32\ctfmon.exe" 
+1992    wpabaln.exe     C:\WINDOWS\system32\wpabaln.exe
+280     notepad.exe     "C:\WINDOWS\system32\NOTEPAD.EXE" C:\Documents and Settings\Administrator\桌面\f_l_a_g.txt
+1568    cmd.exe "C:\WINDOWS\system32\cmd.exe" 
+860     conime.exe      C:\WINDOWS\system32\conime.exe
+856     wmiprvse.exe    C:\WINDOWS\system32\wbem\wmiprvse.exe
+120     nc.exe  nc 192.168.57.14 2333 
+392     DumpIt.exe      "C:\Program Files\DumpIt.exe" 
+
+
+有f_l_a_g.txt 也有一个cmd.exe 还有一个dumpit.exe
+结合题目意思 有可能在nc过后有信息
+
+查看一下进程信息
+python3 vol.py -f tmp/bmzctfneicunquzheng3/memory.raw windows.pslist 
+Volatility 3 Framework 1.0.0
+Progress:  100.00               PDB scanning finished                     
+PID     PPID    ImageFileName   Offset(V)       Threads Handles SessionId       Wow64   CreateTime      ExitTime        File output
+
+4       0       System  0x80eca020      59      252     N/A     False   N/A     N/A     Disabled
+552     4       smss.exe        0x80d98b30      3       21      N/A     False   2016-11-14 12:09:44.000000      N/A     Disabled
+668     552     csrss.exe       0xff70e918      11      401     0       False   2016-11-14 12:09:47.000000      N/A     Disabled
+692     552     winlogon.exe    0xff704da0      18      445     0       False   2016-11-14 12:09:48.000000      N/A     Disabled
+736     692     services.exe    0xff6eb490      16      280     0       False   2016-11-14 12:09:49.000000      N/A     Disabled
+748     692     lsass.exe       0xff6e7770      21      350     0       False   2016-11-14 12:09:49.000000      N/A     Disabled
+900     736     vmacthlp.exe    0xff6d2b48      1       24      0       False   2016-11-14 12:09:50.000000      N/A     Disabled
+928     736     svchost.exe     0xff6b12c0      17      193     0       False   2016-11-14 12:09:50.000000      N/A     Disabled
+992     736     svchost.exe     0xff69f1a8      10      258     0       False   2016-11-14 12:09:51.000000      N/A     Disabled
+1152    736     svchost.exe     0xff68d310      64      1217    0       False   2016-11-14 12:09:51.000000      N/A     Disabled
+1220    736     svchost.exe     0xff6844c0      6       59      0       False   2016-11-14 12:09:51.000000      N/A     Disabled
+1360    736     svchost.exe     0xff6773c8      14      208     0       False   2016-11-14 12:09:52.000000      N/A     Disabled
+1560    736     spoolsv.exe     0xff655498      11      130     0       False   2016-11-14 12:09:53.000000      N/A     Disabled
+1692    736     svchost.exe     0xff63e718      5       87      0       False   2016-11-14 12:10:11.000000      N/A     Disabled
+1756    736     VGAuthService.e 0xff6383d0      2       61      0       False   2016-11-14 12:10:11.000000      N/A     Disabled
+1932    736     vmtoolsd.exe    0xff61b4d8      8       251     0       False   2016-11-14 12:10:20.000000      N/A     Disabled
+308     736     alg.exe 0xff5ea6b0      6       105     0       False   2016-11-14 12:10:22.000000      N/A     Disabled
+316     928     wmiprvse.exe    0xff5e89b0      12      233     0       False   2016-11-14 12:10:22.000000      N/A     Disabled
+1416    1332    explorer.exe    0xff5b8a48      15      446     0       False   2016-11-14 12:10:26.000000      N/A     Disabled
+1204    1152    wscntfy.exe     0xff583a18      1       44      0       False   2016-11-14 12:10:26.000000      N/A     Disabled
+1744    1416    rundll32.exe    0xff56b1b0      4       78      0       False   2016-11-14 12:10:28.000000      N/A     Disabled
+1704    1416    vmtoolsd.exe    0xff56a3f8      6       170     0       False   2016-11-14 12:10:28.000000      N/A     Disabled
+1912    1416    ctfmon.exe      0xff566da0      1       89      0       False   2016-11-14 12:10:28.000000      N/A     Disabled
+1992    692     wpabaln.exe     0x80d4bb28      1       66      0       False   2016-11-14 12:12:26.000000      N/A     Disabled
+280     1416    notepad.exe     0xff5ee020      1       50      0       False   2016-11-14 12:20:27.000000      N/A     Disabled
+1568    1416    cmd.exe 0xff5c5020      1       34      0       False   2016-11-14 12:23:34.000000      N/A     Disabled
+860     1568    conime.exe      0xff5b6448      1       36      0       False   2016-11-14 12:23:34.000000      N/A     Disabled
+856     928     wmiprvse.exe    0x80d4d7f0      6       135     0       False   2016-11-14 12:48:39.000000      N/A     Disabled
+120     1568    nc.exe  0xff555020      1       34      0       False   2016-11-14 12:50:28.000000      N/A     Disabled
+392     1416    DumpIt.exe      0xff65c2a0      1       24      0       False   2016-11-14 12:52:52.000000      N/A     Disabled
+                                                                                                                                       
+
+
+
+
+搜一下文件
+python3 vol.py -f tmp/bmzctfneicunquzheng3/memory.raw windows.filescan |grep -E "txt|zip|rar|png|jpg"
+0x10d7028  100.0\Documents and Settings\Administrator\Local Settings\Temporary Internet Files\Content.IE5\index.dat     112
+0x1b81b48       \Documents and Settings\LocalService\Local Settings\Temporary Internet Files\Content.IE5\index.dat      112
+0x27fed20       \Documents and Settings\All Users\Application Data\VMware\VMware Tools\manifest.txt     112
+0x2c61318       \Program Files\Netcat\P@ssW0rd_is_y0ur_bir7hd4y.zip     112
+0x3ef9728       \Documents and Settings\All Users\Application Data\VMware\VMware VGAuth\logfile.txt.0   112
+0x55f0c50       \WINDOWS\system32\zipfldr.dll   112
+0x5fb0f90       \Documents and Settings\Administrator\Local Settings\Temporary Internet Files\Content.IE5\index.dat     112
+0x7098880       \WINDOWS\system32\zipfldr.dll   112
+0x737d3b0       \Program Files\Netcat\hobbit.txt        112
+0x78c9a48       \Program Files\Netcat\readme.txt        112
+
+发现有一个
+P@ssW0rd_is_y0ur_bir7hd4y.zip
+也可以留意一下
+
+
+dump出zip
+python3 vol.py -f tmp/bmzctfneicunquzheng3/memory.raw windows.dumpfile --physaddr 0x2c61318
+
+
+根据文件名 大概是一个数字密码 直接爆破可以得到flag
+P@ssW0rd_is_y0ur_bir7hd4y.zip
+
+19950101
+flag{Thi5_Is_s3cr3t!}
