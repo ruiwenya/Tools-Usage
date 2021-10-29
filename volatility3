@@ -259,8 +259,8 @@ dump 指定pid的内容
 python3 vol.py -f tmp/memory.img windows.pslist --pid 3660 --dump
 
 查找文件
-python3 vol.py -f tmp/memory.img windows.filescan |grep -E 'flag|txt|png|jpg|gif|bmp'
-
+python3 vol.py -f tmp/memory.img windows.filescan |grep -E -i'flag|txt|png|jpg|gif|bmp'
+#grep -i 忽略大小写
 查看xxx插件的帮助
 python3 vol.py -f tmp/memory.img windows.dumpfiles  -h
 
