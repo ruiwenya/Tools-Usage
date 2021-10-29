@@ -1,7 +1,6 @@
 volatility3 更新
 volatility3是对Volatility2的重写，它基于Python3编写，对Windows 10的内存取证很友好，且速度比Volatility2快很多。对于用户而言，新功能的重点包括：大幅提升性能，消除了对--profile的依赖，以便框架确定需要哪个符号表（配置文件）来匹配内存示例中的操作系统版本，在64位系统（例如Window的wow64）上正确评估32位代码，自动评估内存中的代码，以避免对分析人员进行尽可能多的手动逆向工程
 
-
 若是直接下载的py脚本需要先将windows符号表放置volatility3/volatility/symbols/中
 
 
